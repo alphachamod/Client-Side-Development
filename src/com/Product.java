@@ -45,12 +45,18 @@ public class Product {
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while (rs.next()) {
+				String p_id = Integer.toString(rs.getInt("p_id"));
+				
 				result += "    <tr><th scope=\"row\">" + Integer.toString(rs.getInt("p_id")) + "</th>";
 				result += "      <td>" + rs.getString("p_name")  + "</td>";
 				result += "      <td>" + rs.getString("innovator_name")  + "</td>";
 				result += "      <td>" + rs.getString("initial_price")  + "</td>";
 				result += "      <td>" + rs.getString("stock_amount")  + "</td>";
-				result += "      <td>" + rs.getString("product_category")  + "</td></tr>";
+				result += "      <td>" + rs.getString("product_category")  + "</td>";
+				result +="<td><input name='btnUpdate' type='button' value='Update' "
+				+ "class='btnUpdate btn btn-secondary' data-productid='" + p_id + "'></td>"
+				+ "<td><input name='btnRemove' type='button' value='Remove' "
+				+ "class='btnRemove btn btn-danger' data-productid='" + p_id + "'></td></tr>";
 				
 			}
 			

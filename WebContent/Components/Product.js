@@ -1,147 +1,138 @@
+
 $(document).ready(function()
-{ 
-if ($("#alertSuccess").text().trim() == "") 
- { 
- $("#alertSuccess").hide(); 
- } 
- $("#alertError").hide(); 
-}); 
+{
+    if ($("#alertSuccess").text().trim() == "")
+    {
+        $("#alertSuccess").hide();
+    }
+    $("#alertError").hide();
+});
+
+
 $(document).on("click", "#btnSave", function(event)
-{ 
-// Clear alerts---------------------
- $("#alertSuccess").text(""); 
- $("#alertSuccess").hide(); 
- $("#alertError").text(""); 
- $("#alertError").hide(); 
-// Form validation-------------------
-var status = validateItemForm(); 
-if (status != true) 
- { 
- $("#alertError").text(status); 
- $("#alertError").show(); 
- return; 
- } 
-// If valid------------------------
-var type = ($("#hidItemIDSave").val() == "") ? "POST" : "PUT"; 
- $.ajax( 
- { 
- url : "ItemsAPI", 
- type : type, 
- data : $("#formItem").serialize(), 
- dataType : "text", 
- complete : function(response, status) 
- { 
- onItemSaveComplete(response.responseText, status); 
- } 
- }); 
+{
+    // Alert
+    $("#alertSuccess").text("");
+    $("#alertSuccess").hide();
+    $("#alertError").text("");
+    $("#alertError").hide();
+
+    // Validation
+    var status = validate_productForm();
+    if (status != true)
+    {
+        $("#alertError").text(status);
+        $("#alertError").show();
+        return;
+    }
+    // If true
+    var type = ($("#hidItemIDSave").val() == "") ? "POST" : "PUT";
+
+    $.ajax(
+        {
+            url : "ProductAPI",
+            type : type,
+            data : $("#productForm").serialize(),
+            dataType : "text",
+            complete : function(response, status)
+            {
+                onProductSaveComplete(response.responseText, status);
+            }
+        });
 });
 
-function onItemSaveComplete(response, status)
-{ 
-if (status == "success") 
- { 
- var resultSet = JSON.parse(response); 
- if (resultSet.status.trim() == "success") 
- { 
- $("#alertSuccess").text("Successfully saved."); 
- $("#alertSuccess").show(); 
- $("#divItemsGrid").html(resultSet.data); 
- } else if (resultSet.status.trim() == "error") 
- { 
- $("#alertError").text(resultSet.data); 
- $("#alertError").show(); 
- } 
- } else if (status == "error") 
- { 
- $("#alertError").text("Error while saving."); 
- $("#alertError").show(); 
- } else
- { 
- $("#alertError").text("Unknown error while saving.."); 
- $("#alertError").show(); 
- } 
- $("#hidItemIDSave").val(""); 
- $("#formItem")[0].reset(); 
-}
-
-$(document).on("click", ".btnUpdate", function(event)
-{ 
-$("#hidItemIDSave").val($(this).data("itemid")); 
- $("#itemCode").val($(this).closest("tr").find('td:eq(0)').text()); 
- $("#itemName").val($(this).closest("tr").find('td:eq(1)').text()); 
- $("#itemPrice").val($(this).closest("tr").find('td:eq(2)').text()); 
- $("#itemDesc").val($(this).closest("tr").find('td:eq(3)').text()); 
-});
 
 $(document).on("click", ".btnRemove", function(event)
-{ 
- $.ajax( 
- { 
- url : "ItemsAPI", 
- type : "DELETE", 
- data : "itemID=" + $(this).data("itemid"),
- dataType : "text", 
- complete : function(response, status) 
- { 
- onItemDeleteComplete(response.responseText, status); 
- } 
- }); 
+{
+    $.ajax(
+        {
+            url : "ProductAPI",
+            type : "DELETE",
+            data : "p_id=" + $(this).data("productid"),
+            dataType : "text",
+            complete : function(response, status)
+            {
+                onItemDeleteComplete(response.responseText, status);
+            }
+        });
 });
 
-function onItemDeleteComplete(response, status)
-{ 
-if (status == "success") 
- { 
- var resultSet = JSON.parse(response); 
- if (resultSet.status.trim() == "success") 
- { 
- $("#alertSuccess").text("Successfully deleted."); 
- $("#alertSuccess").show(); 
- $("#divItemsGrid").html(resultSet.data); 
- } else if (resultSet.status.trim() == "error") 
- { 
- $("#alertError").text(resultSet.data); 
- $("#alertError").show(); 
- } 
- } else if (status == "error") 
- { 
- $("#alertError").text("Error while deleting."); 
- $("#alertError").show(); 
- } else
- { 
- $("#alertError").text("Unknown error while deleting.."); 
- $("#alertError").show(); 
- } 
+$(document).on("click", ".btnUpdate", function(event)
+{
+    $("#hidItemIDSave").val($(this).data("acc_id"));
+    $("#p_id").val($(this).closest("tr").find('td:eq(0)').text());
+    $("#p_name").val($(this).closest("tr").find('td:eq(1)').text());
+    $("#innovator_name").val($(this).closest("tr").find('td:eq(2)').text());
+    $("#initial_price").val($(this).closest("tr").find('td:eq(3)').text());
+    $("#stock_amount").val($(this).closest("tr").find('td:eq(1)').text());
+    $("#product_category").val($(this).closest("tr").find('td:eq(2)').text());
+
+});
+
+function onProductSaveComplete(response, status)
+{
+    if (status == "success")
+    {
+        var resultSet = JSON.parse(response);
+        if (resultSet.status.trim() == "success")
+        {
+            $("#alertSuccess").text("Successfully saved.");
+            $("#alertSuccess").show();
+            $("#table").html(resultSet.data);
+        } else if (resultSet.status.trim() == "error")
+        {
+            $("#alertError").text(resultSet.data);
+            $("#alertError").show();
+        }
+    } else if (status == "error")
+    {
+        $("#alertError").text("Error while saving.");
+        $("#alertError").show();
+    } else
+    {
+        $("#alertError").text("Unknown error while saving..");
+        $("#alertError").show();
+    }
+    $("#hidItemIDSave").val("");
+    $("#productForm")[0].reset();
 }
-function validateItemForm() 
-{ 
-// CODE
-if ($("#itemCode").val().trim() == "") 
- { 
- return "Insert Item Code."; 
- } 
-// NAME
-if ($("#itemName").val().trim() == "") 
- { 
- return "Insert Item Name."; 
- } 9
-// PRICE-------------------------------
-if ($("#itemPrice").val().trim() == "") 
- { 
- return "Insert Item Price."; 
- } 
-// is numerical value
-var tmpPrice = $("#itemPrice").val().trim(); 
-if (!$.isNumeric(tmpPrice)) 
- { 
- return "Insert a numerical value for Item Price."; 
- } 
-// convert to decimal price
- $("#itemPrice").val(parseFloat(tmpPrice).toFixed(2)); 
-// DESCRIPTION------------------------
-if ($("#itemDesc").val().trim() == "") 
- { 
- return "Insert Item Description."; 
- } 
-return true; 
+
+
+//validation on the form
+function validate_productForm()
+{
+    //ID
+    var id = $("#p_id").val().trim();
+    if (!$.isNumeric(id))
+    {
+        return "Insert a  value for ID.";
+    }
+    // Product Name
+    if ($("#p_name").val().trim() == "")
+    {
+        return "Insert Product Name";
+    }
+    // innovator_name-------------------------------
+    if ($("#innovator_name").val().trim() == "")
+    {
+        return "Insert the Name of the innovator";
+    }
+    // initial_price-------------------------------
+    if ($("#initial_price").val().trim() == "")
+    {
+        return "Insert the Initial Price";
+    }
+    // stock_amount
+    var sA = $("#stock_amount").val().trim();
+    if (!$.isNumeric(sA))
+    {
+        return "Insert the Stock Amoount.";
+    }
+    // product_category------------------------
+    if ($("#product_category").val().trim() == "")
+    {
+        return "Insert a Product Category";
+    }
+
+    return true;
 }
